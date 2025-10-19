@@ -1,19 +1,31 @@
-import { getPostBySlug, getAllPosts } from "@/lib/posts"
+import Link from "next/link"
+import { getAllPosts, getPostBySlug } from "@/lib/posts"
 import ReactMarkdown from "react-markdown"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
 
 export async function generateStaticParams() {
   const posts = getAllPosts()
-  return posts.map((post) => ({ slug: post.slug }))
+  return posts.map((p) => ({ slug: p.slug }))
 }
 
-export default function PostPage({ params }: { params: { slug: string } }) {
-  const { content, metadata } = getPostBySlug(params.slug)
+export default function BlogPostPage({ params }: { params: { slug: string } }) {
+  const { metadata, content } = getPostBySlug(params.slug)
 
   return (
-    <main className="max-w-3xl mx-auto p-6 prose prose-lg">
+    <article className="prose dark:prose-invert max-w-3xl mx-auto p-6">
+      <div className="mb-8">
+        <Button asChild variant="ghost" size="sm" className="flex items-center gap-2">
+          <Link href="/">
+            <ArrowLeft className="w-4 h-4" />
+            Back to home
+          </Link>
+        </Button>
+      </div>
+
       <h1>{metadata.title}</h1>
-      <p className="text-gray-500 text-sm mb-6">{metadata.date}</p>
+      <p className="text-sm text-muted-foreground mb-6">{metadata.date}</p>
       <ReactMarkdown>{content}</ReactMarkdown>
-    </main>
+    </article>
   )
 }
